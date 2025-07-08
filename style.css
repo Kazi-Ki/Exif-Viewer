@@ -81,19 +81,32 @@ button {
   color: white;
   border: none;
   padding: 0.56em 1.2em;
-  margin-right: 0.8em;
-  border-radius: 24px;
+  margin-right: 1em;
+  border-radius: 4px; /* 四角め */
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 2px 6px var(--shadow);
-  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: none;
+  transition: background-color 0.25s ease;
   user-select: none;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+button:last-child {
+  margin-right: 0;
 }
 
 button:hover {
   background: var(--accent-hover);
-  box-shadow: 0 4px 12px var(--shadow);
+  box-shadow: none;
+}
+
+#downloadButtons {
+  display: flex;
+  gap: 1em;
+  margin-top: 1em;
+  justify-content: flex-start;
 }
 
 #jsonOutput {
