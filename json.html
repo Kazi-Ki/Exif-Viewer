@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Exif JSON Extractor</title>
+<style>
+  body {
+    font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+    background: #f9fafb;
+    margin: 0; padding: 0;
+  }
+  header {
+    text-align: center;
+    padding: 2em 1em 1em;
+    color: #1a73e8;
+  }
+  h1 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2rem;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto 3em;
+    padding: 0 1em;
+  }
+  input[type="file"] {
+    display: block;
+    margin: 1.5em auto;
+    padding: 0.5em 0.8em;
+    font-size: 1rem;
+    border: 1.5px solid #dadce0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+  }
+  input[type="file"]:hover {
+    border-color: #1a73e8;
+  }
+  #errorMsg {
+    color: #d93025;
+    font-weight: 700;
+    text-align: center;
+    margin: 1em 0;
+  }
+  #jsonOutput {
+    white-space: pre-wrap;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+    padding: 1em;
+    font-family: 'Roboto Mono', monospace;
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-top: 1em;
+    user-select: text;
+  }
+  footer {
+    text-align: center;
+    color: #5f6368;
+    padding: 2em 1em 3em;
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Exif JSON Extractor</h1>
+  <p>画像からExif情報を抽出してJSONで表示</p>
+</header>
+
+<main>
+  <input type="file" id="imageInput" accept="image/*" />
+  <div id="errorMsg"></div>
+  <pre id="jsonOutput"></pre>
+</main>
+
+<footer>
+  <p>完全ローカル処理で安心安全です</p>
+  <p>情報情報を詳しく知りたい方は<a href="https://kazi-ki.github.io/Exif-Viewer/details.html">こちら</a></p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/exifr/dist/full.esm.min.js"></script>
+<script type="module">
+  import * as exifr from 'https://cdn.jsdelivr.net/npm/exifr/dist/full.esm.min.js';
+
+  const imageInput = document.getElementById('imageInput');
+  const jsonOutput = document.getElementById('jsonOutput');
+  const errorMsg = document.getElementById('errorMsg');
+
+  imageInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    errorMsg.textContent = '';
+    jsonOutput.textContent = '';
+
+    try {
+      // exifr.full() で全Exif情報をオブジェクトで取得
+      const exifData = await exifr.full(file);
+      if (!exifData) {
+        errorMsg.textContent = 'Exif情報が見つかりませんでした。';
+        return;
+      }
+      // JSON整形して表示
+      jsonOutput.textContent = JSON.stringify(exifData, null, 2);
+    } catch (err) {
+      errorMsg.textContent = 'Exif情報の解析中にエラーが発生しました。';
+      console.error(err);
+    }
+  });
+</script>
+</body>
+</html>
