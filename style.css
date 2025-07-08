@@ -1,96 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&family=Noto+Sans+JP&display=swap');
+
 :root {
-  --bg: #121212;
-  --fg: #e0e0e0;
-  --accent: #2196f3;
-  --card: #1e1e1e;
-  --danger: #ff5252;
-  --mono: 'Courier New', monospace;
-  --warning-bg: #440000;
+  --bg: #fff;
+  --fg: #202124;
+  --accent: #1a73e8;
+  --accent-hover: #155ab6;
+  --card-bg: #f8f9fa;
+  --shadow: rgba(32, 33, 36, 0.28);
+  --danger: #d93025;
+  --danger-bg: #fce8e6;
+  --mono: 'Roboto Mono', monospace;
 }
 
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: 'Noto Sans JP', sans-serif;
-  padding: 2em;
-  max-width: 800px;
+  font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+  padding: 2em 1em;
+  max-width: 720px;
   margin: auto;
 }
 
 header {
   text-align: center;
-  margin-bottom: 2em;
+  margin-bottom: 2.4em;
 }
 
 h1 {
-  font-size: 2.2em;
+  font-weight: 700;
+  font-size: 2.5rem;
   color: var(--accent);
+  margin-bottom: 0.3em;
 }
 
 .subtitle {
-  font-size: 1em;
-  color: #aaa;
+  font-weight: 400;
+  font-size: 1rem;
+  color: #5f6368;
 }
 
 input[type="file"] {
   display: block;
-  margin: 1em auto;
+  margin: 1.5em auto 2em;
+  padding: 0.4em 0.6em;
+  border-radius: 6px;
+  border: 1.5px solid #dadce0;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+input[type="file"]:hover {
+  border-color: var(--accent);
 }
 
 #imagePreview img {
   max-width: 100%;
-  border: 1px solid #333;
-  margin: 1em 0;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px var(--shadow);
+  margin-bottom: 1.8em;
+  display: block;
 }
 
 #output {
-  background: var(--card);
-  padding: 1em;
-  border-radius: 8px;
+  background: var(--card-bg);
+  padding: 1.4em 1.6em;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--shadow);
   white-space: pre-wrap;
   font-family: var(--mono);
-  margin-bottom: 1em;
+  color: var(--fg);
+  margin-bottom: 1.5em;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  min-height: 140px;
 }
 
 button {
-  margin: 0.5em 0.5em 0 0;
-  padding: 0.5em 1em;
   background: var(--accent);
-  border: none;
   color: white;
+  border: none;
+  padding: 0.56em 1.2em;
+  margin-right: 0.8em;
+  border-radius: 24px;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  border-radius: 6px;
+  box-shadow: 0 2px 6px var(--shadow);
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
   user-select: none;
 }
 
 button:hover {
-  background: #1976d2;
+  background: var(--accent-hover);
+  box-shadow: 0 4px 12px var(--shadow);
 }
 
 #jsonOutput {
-  background: #000;
-  color: #0f0;
-  padding: 1em;
-  font-size: 0.85em;
-  overflow-x: auto;
-  border-radius: 8px;
-  margin-top: 1em;
+  background: #202124;
+  color: #e8eaed;
+  padding: 1em 1.2em;
+  border-radius: 12px;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 1.2em;
+  box-shadow: 0 1px 8px var(--shadow);
 }
 
 #loading {
   text-align: center;
-  margin: 1em 0;
-  font-weight: bold;
+  margin: 1.8em 0;
+  font-weight: 600;
   color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5em;
+  gap: 0.6em;
+  font-size: 1.1rem;
 }
 
 .spinner {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border: 3px solid var(--accent);
   border-top: 3px solid transparent;
   border-radius: 50%;
@@ -108,15 +141,17 @@ button:hover {
 }
 
 #warningBox {
-  background: var(--warning-bg);
+  background: var(--danger-bg);
   color: var(--danger);
-  border: 2px solid var(--danger);
-  padding: 1em;
-  margin-top: 1em;
+  border-left: 4px solid var(--danger);
+  padding: 1em 1.2em;
+  margin-top: 1.2em;
   border-radius: 8px;
-  font-weight: bold;
-  animation: shake 0.3s ease-in-out 3;
+  font-weight: 600;
+  font-size: 0.95rem;
   user-select: none;
+  box-shadow: 0 1px 5px rgba(217, 48, 37, 0.3);
+  animation: shake 0.3s ease-in-out 3;
 }
 
 @keyframes shake {
