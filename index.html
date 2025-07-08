@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Exif Viewer-画像解析 </title>
+<link rel="stylesheet" href="style.css" />
+<script src="https://cdn.jsdelivr.net/npm/exifr/dist/lite.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/heic2any/dist/heic2any.min.js"></script>
+</head>
+<body>
+<header>
+  <h1>Exif Viewer</h1>
+  <p class="subtitle">メタデータ解析ツール</p>
+</header>
+
+<main>
+  <input type="file" id="imageInput" accept="image/*" />
+  <div id="loading" class="hidden">解析中…<div class="spinner"></div></div>
+  <div id="imagePreview"></div>
+  <div id="output"></div>
+  <button id="toggleJsonBtn" style="display:none;">JSON表示切替</button>
+
+  <div id="downloadButtons" style="display:none;">
+    <button id="saveJsonBtn">JSONで保存</button>
+    <button id="saveTxtBtn">TXTで保存</button>
+  </div>
+
+  <pre id="jsonOutput" style="display:none;"></pre>
+  <div id="warningBox" class="hidden"></div>
+</main>
+
+<footer>
+  <p>解析はすべてローカルで処理されます</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
