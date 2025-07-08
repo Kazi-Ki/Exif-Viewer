@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Exif JSON Viewer - 日本語解説付き完全版</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto&family=Noto+Sans+JP&family=Roboto+Mono&display=swap');
+
+  body {
+    background: #f9fafb;
+    font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  header {
+    text-align: center;
+    margin-top: 2em;
+    padding: 0 1em;
+  }
+  h1 {
+    color: #1a73e8;
+    font-weight: 700;
+    font-size: 2.4rem;
+    margin-bottom: 0.1em;
+  }
+  .subtitle {
+    font-weight: 400;
+    color: #5f6368;
+    font-size: 1rem;
+  }
+  main {
+    max-width: 720px;
+    margin: 2em auto 3em;
+    padding: 0 1em;
+  }
+  input[type="file"] {
+    display: block;
+    margin: 0 auto 1.5em;
+    padding: 0.5em 0.8em;
+    font-size: 1rem;
+    border: 1.5px solid #dadce0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+  }
+  input[type="file"]:hover {
+    border-color: #1a73e8;
+  }
+  #errorMsg {
+    color: #d93025;
+    font-weight: 700;
+    margin-bottom: 1em;
+    text-align: center;
+  }
+  #jsonTree {
+    margin-top: 1em;
+  }
+  .data-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+    margin-bottom: 12px;
+    padding: 1em 1.2em;
+    word-break: break-word;
+  }
+  .data-card.nested {
+    background: #f1f3f4;
+    margin-left: 1.2em;
+  }
+  .data-key {
+    font-weight: 700;
+    color: #1a73e8;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: baseline;
+    gap: 0.8em;
+    flex-wrap: wrap;
+  }
+  .data-explain {
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: #5f6368;
+    font-style: italic;
+  }
+  .data-value {
+    font-family: 'Roboto Mono', monospace;
+    color: #3c4043;
+    white-space: pre-wrap;
+  }
+  footer {
+    text-align: center;
+    color: #5f6368;
+    padding: 2em 1em 3em;
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Exif JSON Viewer</h1>
+  <p class="subtitle">日本語解説付きでわかりやすくカード表示</p>
+</header>
+
+<main>
+  <input type="file" id="jsonInput" accept=".json" />
+  <div id="errorMsg"></div>
+  <div id="jsonTree"></div>
+</main>
+
+<footer>
+  <p>完全ローカル処理で安心安全です</p>
+</footer>
+
+<script>
+  const keyExplanations = {
+    // カメラ情報関連
+    'Make': 'カメラの製造メーカー',
+    'Model': 'カメラのモデル名',
+    'Software': '使用されたソフトウェア名',
+    'ExifVersion': 'Exif仕様バージョン',
+    'DateTime': 'ファイルの最終更新日時',
+    'DateTimeOriginal': '写真が撮影された日時',
+    'DateTimeDigitized': 'デジタル化された日時',
+    'BodySerialNumber': 'カメラ本体のシリアル番号',
+
+    // 撮影条件関連
+    'ExposureTime': 'シャッタースピード（秒）',
+    'FNumber': '絞り値（F値）',
+    'ExposureProgram': '露出プログラム（モード）',
+    'ISOSpeedRatings': 'ISO感度',
+    'ISO': 'ISO感度',
+    'ExposureBiasValue': '露出補正値',
+    'MeteringMode': '測光方式',
+    'Flash': 'フラッシュの使用状況',
+    'FocalLength': '焦点距離（mm）',
+    'MaxApertureValue': 'レンズの最大絞り値',
+    'SubjectDistance': '被写体までの距離（m）',
+    'WhiteBalance': 'ホワイトバランス設定',
+    'LightSource': '光源タイプ',
+    'SceneCaptureType': 'シーンキャプチャタイプ',
+    'Contrast': 'コントラスト設定',
+    'Saturation': '彩度設定',
+    'Sharpness': 'シャープネス設定',
+
+    // 画像情報関連
+    'ExifImageWidth': '画像の横幅（ピクセル）',
+    'ExifImageHeight': '画像の縦幅（ピクセル）',
+    'ResolutionUnit': '解像度の単位',
+    'XResolution': '画像のX方向解像度',
+    'YResolution': '画像のY方向解像度',
+    'Orientation': '画像の向き',
+    'ColorSpace': '色空間情報',
+    'PixelXDimension': '画像の横ピクセル数',
+    'PixelYDimension': '画像の縦ピクセル数',
+
+    // GPS関連
+    'GPSVersionID': 'GPS情報のバージョン',
+    'GPSLatitudeRef': '緯度の方向（北/南）',
+    'GPSLatitude': '緯度（度）',
+    'GPSLongitudeRef': '経度の方向（東/西）',
+    'GPSLongitude': '経度（度）',
+    'GPSAltitudeRef': '高度の参照（海抜より上/下）',
+    'GPSAltitude': '高度（メートル）',
+    'GPSTimeStamp': 'GPSの取得時刻（UTC）',
+    'GPSDateStamp': 'GPSの取得日付（UTC）',
+    'GPSImgDirectionRef': '画像方向の参照',
+    'GPSImgDirection': '画像の方向（度）',
+
+    // その他よく見る項目
+    'ThumbnailOffset': 'サムネイル画像の開始位置',
+    'ThumbnailLength': 'サムネイル画像の長さ',
+    'Compression': '圧縮方式',
+    'ComponentsConfiguration': '画像構成要素の配置',
+    'FlashPixVersion': 'FlashPix仕様バージョン',
+    'SensingMethod': '撮像素子の種類',
+    'ExposureMode': '露出モード',
+    'DigitalZoomRatio': 'デジタルズーム倍率',
+    'SceneType': 'シーンタイプ',
+    'CustomRendered': 'カスタムレンダリング状態',
+    'ExposureIndex': '露出インデックス',
+    'GainControl': 'ゲイン制御',
+    'SubjectDistanceRange': '被写体距離範囲',
+
+    // その他補足説明が必要なもの
+    'ImageUniqueID': '画像のユニークID',
+    'OwnerName': 'カメラ所有者の名前',
+    'MakerNote': 'メーカー固有のメタデータ',
+    'UserComment': 'ユーザーによるコメント',
+    'RelatedSoundFile': '関連する音声ファイル名',
+
+    // 動画ファイルなどで見られる場合あり
+    'Duration': '動画の長さ（秒）',
+    'FrameRate': 'フレームレート（fps）',
+    'VideoCompression': '動画圧縮方式',
+  };
+
+  const jsonInput = document.getElementById('jsonInput');
+  const jsonTree = document.getElementById('jsonTree');
+  const errorMsg = document.getElementById('errorMsg');
+
+  function createCardTree(obj, nested = false) {
+    const container = document.createElement('div');
+    for (const key in obj) {
+      const value = obj[key];
+      const card = document.createElement('div');
+      card.classList.add('data-card');
+      if (nested) card.classList.add('nested');
+
+      // key要素作成
+      const keyEl = document.createElement('div');
+      keyEl.className = 'data-key';
+
+      // キー名テキスト
+      const keyName = document.createElement('span');
+      keyName.textContent = key;
+      keyEl.appendChild(keyName);
+
+      // 解説があれば追加
+      if (keyExplanations[key]) {
+        const explainEl = document.createElement('span');
+        explainEl.className = 'data-explain';
+        explainEl.textContent = `（${keyExplanations[key]}）`;
+        keyEl.appendChild(explainEl);
+      }
+
+      card.appendChild(keyEl);
+
+      if (typeof value === 'object' && value !== null) {
+        card.appendChild(createCardTree(value, true));
+      } else {
+        const valEl = document.createElement('div');
+        valEl.className = 'data-value';
+        valEl.textContent = String(value);
+        card.appendChild(valEl);
+      }
+      container.appendChild(card);
+    }
+    return container;
+  }
+
+  jsonInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    errorMsg.textContent = '';
+    jsonTree.textContent = '';
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        const tree = createCardTree(data);
+        jsonTree.appendChild(tree);
+      } catch (err) {
+        errorMsg.textContent = '無効なJSONファイルです。';
+      }
+    };
+    reader.readAsText(file);
+  });
+</script>
+</body>
+</html>
